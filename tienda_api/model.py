@@ -9,3 +9,4 @@ class Producto(Base):
     descripcion = Column(String, index=True)
     imagen_url = Column(String)
     precio = Column(Float)
+

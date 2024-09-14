@@ -20,7 +20,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar el resto del código de tu aplicación al contenedor
 COPY tienda_api/ ./tienda_api/
 
-
 # Exponer el puerto en el que tu aplicación se ejecutará
 EXPOSE 8080
 
