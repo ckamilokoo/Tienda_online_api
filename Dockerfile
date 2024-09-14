@@ -22,4 +22,4 @@ COPY tienda_api/ ./tienda_api/
 EXPOSE 8080
 
 # Comando para ejecutar la aplicación FastAPI
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "tienda_api.main:app", "--host", "0.0.0.0", "--port", "8080"]
