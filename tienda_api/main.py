@@ -1,22 +1,23 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from tienda_api import models, schemas
+from tienda_api.model import Producto
+from tienda_api.schemas import ProductoCreate, Producto as ProductoSchema
 from tienda_api.database import SessionLocal, engine, get_db, cargar_productos_iniciales
 
 app = FastAPI()
 
-# Configurar CORS para permitir cualquier origen
+# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir todos los orígenes
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, PUT, DELETE)
-    allow_headers=["*"],  # Permitir todos los encabezados
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Crear las tablas en la base de datos
-models.Base.metadata.create_all(bind=engine)
+Producto.metadata.create_all(bind=engine)
 
 # Cargar productos por defecto
 @app.on_event("startup")
@@ -25,30 +26,30 @@ def startup_event():
     cargar_productos_iniciales(db)
     db.close()
 
-# Rutas de la API
-@app.get("/productos/", response_model=list[schemas.Producto])
+# Rutas
+@app.get("/productos/", response_model=list[ProductoSchema])
 async def read_productos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    productos = db.query(models.Producto).offset(skip).limit(limit).all()
+    productos = db.query(Producto).offset(skip).limit(limit).all()
     return productos
 
-@app.post("/productos/", response_model=schemas.Producto)
-async def create_producto(producto: schemas.ProductoCreate, db: Session = Depends(get_db)):
-    db_producto = models.Producto(**producto.dict())
+@app.post("/productos/", response_model=ProductoSchema)
+async def create_producto(producto: ProductoCreate, db: Session = Depends(get_db)):
+    db_producto = Producto(**producto.dict())
     db.add(db_producto)
     db.commit()
     db.refresh(db_producto)
     return db_producto
 
-@app.get("/productos/{producto_id}", response_model=schemas.Producto)
+@app.get("/productos/{producto_id}", response_model=ProductoSchema)
 async def read_producto(producto_id: int, db: Session = Depends(get_db)):
-    producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    producto = db.query(Producto).filter(Producto.id == producto_id).first()
     if producto is None:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return producto
 
-@app.put("/productos/{producto_id}", response_model=schemas.Producto)
-async def update_producto(producto_id: int, producto: schemas.ProductoCreate, db: Session = Depends(get_db)):
-    db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+@app.put("/productos/{producto_id}", response_model=ProductoSchema)
+async def update_producto(producto_id: int, producto: ProductoCreate, db: Session = Depends(get_db)):
+    db_producto = db.query(Producto).filter(Producto.id == producto_id).first()
     if db_producto is None:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
@@ -59,12 +60,14 @@ async def update_producto(producto_id: int, producto: schemas.ProductoCreate, db
     db.refresh(db_producto)
     return db_producto
 
-@app.delete("/productos/{producto_id}", response_model=schemas.Producto)
+@app.delete("/productos/{producto_id}", response_model=ProductoSchema)
 async def delete_producto(producto_id: int, db: Session = Depends(get_db)):
-    db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    db_producto = db.query(Producto).filter(Producto.id == producto_id).first()
     if db_producto is None:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     
     db.delete(db_producto)
     db.commit()
     return db_producto
+
+

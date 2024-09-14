@@ -14,3 +14,4 @@ class Producto(ProductoBase):
 
     class Config:
         orm_mode = True
+

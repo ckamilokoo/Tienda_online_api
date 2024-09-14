@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
-# Define Base in a separate module
+# Define Base en un módulo separado
 Base = declarative_base()
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"  # Base de datos en SQLite
@@ -19,7 +19,7 @@ def get_db():
         db.close()
 
 def cargar_productos_iniciales(db: Session):
-    from tienda_api.models import Producto  # Import local para evitar importación circular
+    from tienda_api.model import Producto  # Import local para evitar importación circular
 
     # Verificar si ya existen productos en la base de datos
     if db.query(Producto).count() == 0:
@@ -40,3 +40,4 @@ def cargar_productos_iniciales(db: Session):
         db.add(producto1)
         db.add(producto2)
         db.commit()
+
