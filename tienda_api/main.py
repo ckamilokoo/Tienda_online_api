@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-import model as models
-import schemas
+from tienda_api import model as models
+from tienda_api import schemas
 from database import SessionLocal, engine, get_db , cargar_productos_iniciales
 
 app = FastAPI()

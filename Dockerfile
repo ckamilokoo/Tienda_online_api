@@ -7,6 +7,9 @@ RUN python -m venv /opt/env
 # Activar el entorno virtual
 ENV PATH="/opt/env/bin:$PATH"
 
+# Configurar PYTHONPATH
+ENV PYTHONPATH=/usr/app/src/tienda_api
+
 # Establecer el directorio de trabajo en el contenedor
 WORKDIR /usr/app/src
 
