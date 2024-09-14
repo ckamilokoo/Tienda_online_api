@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from tienda_api import model as models
 from tienda_api import schemas
-from database import SessionLocal, engine, get_db , cargar_productos_iniciales
+from tienda_api.database import SessionLocal, engine, get_db , cargar_productos_iniciales
 
 app = FastAPI()
 
