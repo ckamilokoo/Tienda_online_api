@@ -11,7 +11,7 @@ ENV PATH="/opt/env/bin:$PATH"
 WORKDIR /usr/app/src
 
 # Copiar el archivo de requisitos y las dependencias
-COPY tienda_api/requirements.txt ./
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar el resto del código de tu aplicación al contenedor
