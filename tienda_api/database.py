@@ -19,7 +19,7 @@ def get_db():
         db.close()
 
 def cargar_productos_iniciales(db: Session):
-    from tienda_api.model import Producto  # Import local para evitar importación circular
+    from model import Producto  # Import local para evitar importación circular
 
     # Verificar si ya existen productos en la base de datos
     if db.query(Producto).count() == 0:
@@ -36,8 +36,85 @@ def cargar_productos_iniciales(db: Session):
             precio=850,
             imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
         )
+        producto3 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto4 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto5 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto6 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto7 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto8 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto9 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto10 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto11 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto12 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
+        producto13 = Producto(
+            nombre="The Hilton Hotel",
+            descripcion="Hotel en Lisboa, Portugal",
+            precio=850,
+            imagen_url="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        )
         # Añadir productos a la sesión
         db.add(producto1)
         db.add(producto2)
+        db.add(producto3)
+        db.add(producto4)
+        db.add(producto5)
+        db.add(producto6)
+        db.add(producto7)
+        db.add(producto8)
+        db.add(producto9)
+        db.add(producto10)
+        db.add(producto11)
+        db.add(producto12)
+        db.add(producto13)
         db.commit()
 
