@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from model import Producto
-from schemas import ProductoCreate, Producto as ProductoSchema
-from database import SessionLocal, engine, get_db, cargar_productos_iniciales
+from tienda_api.model import Producto
+from tienda_api.schemas import ProductoCreate, Producto as ProductoSchema
+from tienda.database import SessionLocal, engine, get_db, cargar_productos_iniciales
 
 app = FastAPI()
 
