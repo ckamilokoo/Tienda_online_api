@@ -33,13 +33,6 @@ class UserInDB(UserCreate):
     """
     hashed_password: str  # Contraseña almacenada de forma encriptada
 
-class Token(BaseModel):
-    """
-    Esquema para la respuesta de autenticación.
-    Contiene el token de acceso y su tipo.
-    """
-    access_token: str  # El token JWT generado
-    token_type: str  # Tipo de token, normalmente "Bearer"
 
 class TokenData(BaseModel):
     """
@@ -56,6 +49,21 @@ class UserOut(BaseModel):
     class Config:
         orm_mode = True
         fields = {'password': {'exclude': True}}  # Excluye el campo password
+        
+
+class Token(BaseModel):
+    """
+    Esquema para la respuesta de autenticación.
+    Contiene el token de acceso y su tipo.
+    """
+    access_token: str  # El token JWT generado
+    token_type: str  # Tipo de token, normalmente "Bearer"
+    user: UserOut  # Información adicional del usuario
+    
+    
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
 
 

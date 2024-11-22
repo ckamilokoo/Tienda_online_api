@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from model import Producto , User
-from schemas import ProductoCreate, Producto as ProductoSchema , Token , UserCreate ,UserInDB ,TokenData ,UserOut
+from schemas import ProductoCreate, Producto as ProductoSchema , Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest
 
 from database import SessionLocal, engine, get_db, cargar_productos_iniciales
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -180,34 +180,46 @@ def authenticate_user(db, username: str, password: str):
     return user  # Si todo es válido, retorna al usuario
 
 @app.post("/register", response_model=Token)
-def register(user: UserCreate, db: db_dependency):
-    """
-    Registra un nuevo usuario en el sistema.
-    - Verifica que el nombre de usuario no esté ya registrado.
-    - Encripta la contraseña antes de guardarla.
-    - Genera un token JWT de acceso tras el registro exitoso.
-    """
-    db_user = get_user(db, user.username)  # Verifica si el usuario ya existe
-    if db_user:
-        # Lanza una excepción si el nombre de usuario ya está registrado
-        raise HTTPException(status_code=400, detail="Username already registered")
-    hashed_password = get_password_hash(user.password)  # Encripta la contraseña
-    # Crea un nuevo objeto de usuario con los datos proporcionados
-    db_user = User(username=user.username, hashed_password=hashed_password ,rol="user")
-    db.add(db_user)  # Agrega el usuario a la base de datos
-    db.commit()  # Confirma los cambios
-    db.refresh(db_user)  # Refresca el objeto usuario para obtener el ID asignado
-    access_token = create_access_token(data={"sub": db_user.username})  # Genera un token de acceso
-    return {"access_token": access_token, "token_type": "bearer"}  # Retorna el token
+async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    
+    existing_user = db.query(User).filter(User.username == user.username).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El nombre de usuario ya está en uso."
+        )
+    # Crea al usuario (esto debe estar implementado en tu lógica)
+    hashed_password = pwd_context.hash(user.password)
+    db_user = User(username=user.username, hashed_password=hashed_password, rol=user.rol)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    # Genera el token de acceso
+    access_token = jwt.encode(
+        {"sub": user.username, "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)},
+        SECRET_KEY,
+        algorithm=ALGORITHM,
+    )
+
+    # Incluye la información del usuario en la respuesta
+    user_out = UserOut(username=db_user.username, rol=db_user.rol, is_active=True)
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user_out,  # Este campo es obligatorio según tu esquema
+    }
+
 
 @app.post("/token", response_model=Token)
-def login_for_access_token(db: db_dependency, form_data: OAuth2PasswordRequestForm = Depends()):
+def login_for_access_token(login_request: LoginRequest, db: Session = Depends(get_db)):
     """
     Endpoint para iniciar sesión y obtener un token de acceso.
     - Verifica las credenciales proporcionadas.
     - Genera y retorna un token JWT si la autenticación es exitosa.
     """
-    user = authenticate_user(db, form_data.username, form_data.password)  # Autentica al usuario
+    user = authenticate_user(db, login_request.username, login_request.password)  # Autentica al usuario
     if not user:
         # Lanza una excepción si las credenciales son incorrectas
         raise HTTPException(
@@ -215,8 +227,21 @@ def login_for_access_token(db: db_dependency, form_data: OAuth2PasswordRequestFo
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
     access_token = create_access_token(data={"sub": user.username})  # Genera un token de acceso
-    return {"access_token": access_token, "token_type": "bearer"}  # Retorna el token
+
+    # Devuelve el token, el tipo de token y los datos del usuario
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "username": user.username,
+            "rol": user.rol,
+            "is_active": user.is_active,
+        }
+    }
+
+
 
 
 @app.get("/users/me/", response_model=UserOut)
