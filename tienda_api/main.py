@@ -244,20 +244,22 @@ def login_for_access_token(login_request: LoginRequest, db: Session = Depends(ge
 
 
 
-@app.get("/users/me/", response_model=UserOutWithToken)
+@app.get("/users/me/")
 def read_users_me(
     current_user: User = Depends(get_current_user), 
     token: str = Depends(oauth2_scheme)
 ):
-    """
-    Devuelve la información del usuario actualmente autenticado, junto con su token.
-    """
     return {
-        "username": current_user.username,
-        "rol": current_user.rol,
-        "is_active": current_user.is_active,
-        "access_token": token,  # Devuelve el token de acceso
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "username": current_user.username,
+            "rol": current_user.rol,
+            "is_active": current_user.is_active,
+        }
     }
+
+
 
 
 
