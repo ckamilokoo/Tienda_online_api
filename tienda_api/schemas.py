@@ -51,6 +51,9 @@ class UserOut(BaseModel):
         fields = {'password': {'exclude': True}}  # Excluye el campo password
         
 
+class UserOutWithToken(UserOut):
+    access_token: str  # Incluye el token de acceso
+
 class Token(BaseModel):
     """
     Esquema para la respuesta de autenticación.

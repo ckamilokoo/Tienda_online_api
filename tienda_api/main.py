@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from model import Producto , User
-from schemas import ProductoCreate, Producto as ProductoSchema , Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest
+from schemas import ProductoCreate, Producto as ProductoSchema , Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
 from database import SessionLocal, engine, get_db, cargar_productos_iniciales
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -244,13 +244,20 @@ def login_for_access_token(login_request: LoginRequest, db: Session = Depends(ge
 
 
 
-@app.get("/users/me/", response_model=UserOut)
-def read_users_me(current_user: User = Depends(get_current_user)):
+@app.get("/users/me/", response_model=UserOutWithToken)
+def read_users_me(
+    current_user: User = Depends(get_current_user), 
+    token: str = Depends(oauth2_scheme)
+):
     """
-    Devuelve la información del usuario actualmente autenticado.
-    - `current_user`: Obtenido a través de la dependencia `user_dependency`, que valida el token JWT.
-    - Responde con el modelo `UserCreate`, mostrando detalles como el nombre de usuario.
+    Devuelve la información del usuario actualmente autenticado, junto con su token.
     """
-    return current_user
+    return {
+        "username": current_user.username,
+        "rol": current_user.rol,
+        "is_active": current_user.is_active,
+        "access_token": token,  # Devuelve el token de acceso
+    }
+
 
 
