@@ -4,7 +4,7 @@ from typing import Optional, List
 from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from model import Producto , User
+from tienda_api.model import Producto , User
 from schemas import ProductoCreate, Producto as ProductoSchema , Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
 from database import SessionLocal, engine, get_db, cargar_productos_iniciales
