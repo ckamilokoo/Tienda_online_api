@@ -1,4 +1,5 @@
 annotated-types==0.6.0
+supabase
 anyio==4.3.0
 bcrypt==4.0.0
 certifi==2024.2.2
