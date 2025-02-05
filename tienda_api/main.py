@@ -4,10 +4,10 @@ from typing import Optional, List
 from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from model import Producto , User
-from schemas import ProductoCreate, Producto as ProductoSchema , Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
+from tienda_api.model import Producto , User
+from tienda_api.schemas import  Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
-from database import SessionLocal, engine, get_db, cargar_productos_iniciales
+
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # Manejo de JWT para la autenticación
 from passlib.context import CryptContext  # Encriptación de contraseñas
@@ -16,6 +16,7 @@ import os
 from fastapi.staticfiles import StaticFiles
 from uuid import uuid4
 from supabase import create_client, Client
+from fastapi.responses import RedirectResponse
 
 UPLOAD_FOLDER = "./uploaded_images"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -64,6 +65,10 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 # Función para encriptar contraseñas
 def get_password_hash(password: str):
     return pwd_context.hash(password)
+
+@app.get("/")
+def read_root():
+    return RedirectResponse(url="/docs")
 
 
 @app.post("/register", response_model=Token)
