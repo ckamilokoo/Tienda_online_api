@@ -4,8 +4,8 @@ from typing import Optional, List
 from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from tienda_api.model import Producto , User
-from tienda_api.schemas import  Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
+from model import Producto , User
+from schemas import  Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -18,8 +18,7 @@ from uuid import uuid4
 from supabase import create_client, Client
 from fastapi.responses import RedirectResponse
 
-UPLOAD_FOLDER = "./uploaded_images"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 
 
 SUPABASE_URL = "https://kasavcuflkptbqewqrmv.supabase.co"  # Reemplaza con tu URL de Supabase
