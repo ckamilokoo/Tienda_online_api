@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float ,Boolean 
 
 
-class Producto(Base):
+class Producto():
     __tablename__ = "productos"
     __table_args__ = {'extend_existing': True}
 
@@ -12,7 +12,7 @@ class Producto(Base):
     precio = Column(Float)
     
     
-class User(Base):
+class User():
     """
     Modelo para la tabla 'users' en la base de datos.
     Representa a un usuario con su nombre de usuario, contraseña encriptada y estado.
