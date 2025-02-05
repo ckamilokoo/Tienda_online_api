@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from tienda_api.model import Producto , User
 from tienda_api.schemas import  Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
+from langgraph.paciente_virtual import construir_y_ejecutar_grafo
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # Manejo de JWT para la autenticación
@@ -16,7 +17,7 @@ import os
 from fastapi.staticfiles import StaticFiles
 from uuid import uuid4
 from supabase import create_client, Client
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse ,JSONResponse
 
 
 
@@ -65,9 +66,22 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 def get_password_hash(password: str):
     return pwd_context.hash(password)
 
+class ChatRequest(BaseModel):
+    descripcion: str
+    contexto: str
+    mensaje_usuario: str
+    id:str
+
 @app.get("/")
 def read_root():
     return RedirectResponse(url="/docs")
+
+@app.post("/ws")
+def chat_endpoint(request: ChatRequest):
+    respuesta = construir_y_ejecutar_grafo(
+        request.descripcion, request.contexto, request.mensaje_usuario ,request.id
+    )
+    return JSONResponse(content={"respuesta": respuesta})
 
 
 @app.post("/register", response_model=Token)
