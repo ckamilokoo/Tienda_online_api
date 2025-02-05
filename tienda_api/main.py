@@ -4,7 +4,7 @@ from typing import Optional, List
 from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from tienda_api.model import Producto , User
+from model import Producto , User
 from schemas import ProductoCreate, Producto as ProductoSchema , Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
 from database import SessionLocal, engine, get_db, cargar_productos_iniciales
@@ -25,6 +25,10 @@ SUPABASE_URL = "https://kasavcuflkptbqewqrmv.supabase.co"  # Reemplaza con tu UR
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imthc2F2Y3VmbGtwdGJxZXdxcm12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIwMDI1NTMsImV4cCI6MjA0NzU3ODU1M30.KL5OefuVJ8az1gfTkGV3gVda__OIUhPDjxAw7tlUQsA"  # Usa la clave secreta correcta de Supabase
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+
+# Esquema OAuth2 para manejar autenticación mediante tokens
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 # Configuración de seguridad
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
@@ -32,7 +36,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Duración del token en minutos
 
 app = FastAPI()
 
-app.mount("/imagenes", StaticFiles(directory=UPLOAD_FOLDER), name="imagenes")
+
 
 
 # Configurar CORS
@@ -47,8 +51,7 @@ app.add_middleware(
 # Contexto para manejar la encriptación de contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Esquema OAuth2 para manejar autenticación mediante tokens
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 # Dependencia para inyectar la base de datos en las funciones
 # Función para crear token JWT
@@ -63,7 +66,6 @@ def get_password_hash(password: str):
     return pwd_context.hash(password)
 
 
-# Registrar usuario
 @app.post("/register", response_model=Token)
 async def register_user(user: UserCreate):
     # Verificar si el usuario ya existe
@@ -79,14 +81,24 @@ async def register_user(user: UserCreate):
         "rol": user.rol,
         "is_active": True
     }).execute()
-
-    if response.error:
+    
+    print(response)  # Para depuración
+    
+    # ⚠️ Validación corregida: Verificar si `data` está vacío
+    if not response.data:
         raise HTTPException(status_code=500, detail="Error al crear el usuario.")
 
     # Generar token
     access_token = create_access_token({"sub": user.username})
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer","user": {  # Agregar los datos del usuario aquí
+            "id": response.data[0]["id"],
+            "username": response.data[0]["username"],
+            "is_active": response.data[0]["is_active"],
+            "rol": response.data[0]["rol"]
+        }}
+
+
 
 # Login de usuario
 @app.post("/token", response_model=Token)
@@ -119,15 +131,29 @@ async def read_users_me(token: str = Depends(oauth2_scheme)):
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Token inválido."
     )
-
+    
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        username = payload.get("sub")
+        if not username:
             raise credentials_exception
-    except JWTError:
-        raise credentials_exception  # Maneja errores correctamente
-    return {"username": username}
+    except JWTError:  # ✅ Se usa JWTError en vez de PyJWTError
+        raise credentials_exception
+
+    response = supabase.table("users").select("*").eq("username", username).execute()
+    if not response.data:
+        raise credentials_exception
+
+    user = response.data[0]
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "username": user["username"],
+            "rol": user["rol"],
+            "is_active": user["is_active"],
+        }
+    }
 
 
 
