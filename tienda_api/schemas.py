@@ -1,10 +1,10 @@
 from pydantic import BaseModel 
-from typing import Optional, List
+from typing import Optional, List, Optional
 
 class ProductoBase(BaseModel):
     nombre: str
     descripcion: str
-    imagen_url: str
+    imagen_url: Optional[str] = None  # URL para la imagen asociada al producto
     precio: float
 
 class ProductoCreate(ProductoBase):
@@ -47,8 +47,8 @@ class UserOut(BaseModel):
     is_active:bool
     # omite el password en la salida
     class Config:
-        orm_mode = True
-        fields = {'password': {'exclude': True}}  # Excluye el campo password
+        from_attributes = True
+        #fields = {'password': {'exclude': True}}  # Excluye el campo password
         
 
 class UserOutWithToken(UserOut):
