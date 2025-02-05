@@ -4,8 +4,8 @@ from typing import Optional, List
 from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from model import Producto , User
-from schemas import  Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
+from tienda_api.model import Producto , User
+from tienda_api.schemas import  Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
