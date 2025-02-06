@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from tienda_api.model import Producto , User
-from tienda_api.schemas import  Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
+from tienda_api.schemas import ProductoBase , ProductoCreate, Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
 from langgraph.paciente_virtual import construir_y_ejecutar_grafo
 
@@ -71,6 +71,21 @@ class ChatRequest(BaseModel):
     contexto: str
     mensaje_usuario: str
     id:str
+    
+    
+@app.get("/productos/", response_model=list[ProductoBase])
+async def read_productos(skip: int = 0, limit: int = 10):
+    response = supabase.table("productos").select("*").range(skip, skip + limit - 1).execute()
+    return response.data
+
+@app.post("/producto", response_model=ProductoBase)
+async def create_producto(producto: ProductoCreate):
+    
+
+    response = supabase.table("productos").insert(producto.dict()).execute()
+    return response.data[0]
+
+
 
 @app.get("/")
 def read_root():
