@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from tienda_api.model import Producto , User
 from tienda_api.schemas import ProductoBase , ProductoCreate, Token , UserCreate ,UserInDB ,TokenData ,UserOut , LoginRequest , UserOutWithToken
 
-from langgraph.paciente_virtual import construir_y_ejecutar_grafo
+
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # Manejo de JWT para la autenticación
