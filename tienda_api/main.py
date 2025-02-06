@@ -86,17 +86,24 @@ async def create_producto(producto: ProductoCreate):
     return response.data[0]
 
 
+@app.get("/productos/{producto_id}", response_model=ProductoBase)
+async def read_producto(producto_id: int):
+    # Buscar el producto en Supabase por ID
+    response = supabase.table("productos").select("*").eq("id", producto_id).execute()
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+    return response.data[0]  # Retorna el primer producto encontrado
+
+
+
 
 @app.get("/")
 def read_root():
     return RedirectResponse(url="/docs")
 
-@app.post("/ws")
-def chat_endpoint(request: ChatRequest):
-    respuesta = construir_y_ejecutar_grafo(
-        request.descripcion, request.contexto, request.mensaje_usuario ,request.id
-    )
-    return JSONResponse(content={"respuesta": respuesta})
+
 
 
 @app.post("/register", response_model=Token)
